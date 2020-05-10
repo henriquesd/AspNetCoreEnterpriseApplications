@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NSE.Identidade.API.Data;
 
 namespace NSE.Identidade.API
 {
@@ -21,14 +17,25 @@ namespace NSE.Identidade.API
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
+        
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDefaultIdentity<IdentityUser>()
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+            // Esse "AddDefaultTokenProviders", não tem haver com json web token; são aqueles tokens que ele gera
+            // para caso você precise resetar uma senha, ou até mesmo autenticar uma conta recém criada, ele vai criar um
+            // token, uma chave, que é para identificar quando você recebeu um e-mail, clicando naquele link, que você é
+            // aquele usuário, que aquele e-mail foi enviado para você, e que você realmente é a pessoa que deveria receber
+            // aquele e-mail; é uma criptografia dentro de um link para te reconhecer;
+
             services.AddControllers();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -40,6 +47,7 @@ namespace NSE.Identidade.API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,0 +1,6 @@
+﻿NSE.Identidade.API
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+Add-Migration Initial
+
+Update-Database
