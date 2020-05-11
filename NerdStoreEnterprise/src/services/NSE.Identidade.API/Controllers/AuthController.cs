@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 
 namespace NSE.Identidade.API.Controllers
 {
+    // Se você colocar este atributo 'ApiController', decorando sua Controller, você está dizendo que ela é uma ApiController
+    // ela herda de Controller para obter as capacidades de uma Controller, só que você está dizendo que tipo de Controller ela é,
+    // e pelo fato de você fazer isso você já libera o entendimento dos schemas do Swagger;
+    [ApiController]
     [Route("api/identidade")]
     public class AuthController : Controller
     {
